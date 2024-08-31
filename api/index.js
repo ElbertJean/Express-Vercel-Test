@@ -1,12 +1,14 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
-
-const supabase = require('./supabaseClient.js');
-
 const cors = require('cors');
+const { createClient } = require('@supabase/supabase-js');
 
 dotenv.config();
+
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const app = express();
 app.use(express.json());
@@ -50,13 +52,15 @@ app.post('/send-email', async (req, res) => {
 });
 
 app.post('/cliente', async (req, res) => {
-  const { nome, rg, cpf, email, telefone, endereco_id } = req.body;
+  const { nome, rg, cpf, email, telefone } = req.body;
 
   const { data, error } = await supabase
-    .from('clientes')
-    .insert([{ nome, rg, cpf, email, telefone, endereco_id }]);
+    .from('cliente')
+    .insert([{ nome, rg, cpf, email, telefone }])
+    .select('*');
 
   if (error) {
+    console.error('Erro ao inserir cliente:', error.message);
     res.status(500).json({ error: error.message });
   } else {
     res.status(200).json(data);
@@ -65,7 +69,7 @@ app.post('/cliente', async (req, res) => {
 
 app.get('/clientes', async (req, res) => {
   const { data, error } = await supabase
-    .from('clientes')
+    .from('cliente')
     .select('*');
 
   if (error) {
@@ -75,7 +79,7 @@ app.get('/clientes', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
