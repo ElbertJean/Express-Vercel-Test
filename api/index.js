@@ -1,7 +1,8 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import nodemailer from 'nodemailer';
-import { supabase } from './subapaseClient';
+const express = require('express');
+const dotenv = require('dotenv');
+const nodemailer = require('nodemailer');
+
+const supabase = require('./supabaseClient.js');
 
 const cors = require('cors');
 
