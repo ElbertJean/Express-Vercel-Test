@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(cors());
 
 app.post('/send-email', async (req, res) => {
-  const { nome, telefone, email, mensagem } = req.body;
+  const { nome, telefone, email, cpf, mensagem } = req.body;
 
   const transporter = nodemailer.createTransport({
     host: process.env.SPRING_MAIL_HOST,
@@ -34,7 +34,7 @@ app.post('/send-email', async (req, res) => {
     from: process.env.SPRING_MAIL_USERNAME,
     to: 'elbertjean@zohomail.com',
     subject: `Novo contato de: ${nome}`,
-    text: `Nome: ${nome}\nTelefone: ${telefone}\nEmail: ${email}\nMensagem: ${mensagem}`,
+    text: `Nome: ${nome}\nTelefone: ${telefone}\nCPF: ${cpf}\nEmail: ${email}\nMensagem: ${mensagem}`,
   };
 
   try {
