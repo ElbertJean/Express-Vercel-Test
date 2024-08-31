@@ -14,6 +14,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+
+// ************************************
+// **************EMAIL*****************
+// ************************************
 app.post('/send-email', async (req, res) => {
   const { nome, telefone, email, cpf, mensagem } = req.body;
 
@@ -51,12 +55,41 @@ app.post('/send-email', async (req, res) => {
   }
 });
 
-app.post('/cliente', async (req, res) => {
-  const { nome, rg, cpf, email, telefone } = req.body;
+// ************************************
+// **************CLIENTE***************
+// ************************************
+app.get('/get-clientes', async (req, res) => {
+  const { data, error } = await supabase
+    .from('cliente')
+    .select('*');
+
+  if (error) {
+    res.status(500).json({ error: error.message });
+  } else {
+    res.status(200).json(data);
+  }
+});
+
+app.get('/get-cliente/:cli_id', async (req, res) => {
+  const { cli_id } = req.params;
+  const { data, error } = await supabase
+    .from('cliente')
+    .select('*')
+    .eq('cli_id', cli_id);
+
+  if (error) {
+    res.status(500).json({ error: error.message });
+  } else {
+    res.status(200).json(data);
+  }
+});
+
+app.post('/post-cliente', async (req, res) => {
+  const { cli_id, cli_nome, cli_rg, cli_cpf, cli_email, cli_telefone } = req.body;
 
   const { data, error } = await supabase
     .from('cliente')
-    .insert([{ nome, rg, cpf, email, telefone }])
+    .insert([{ cli_id, cli_nome, cli_rg, cli_cpf, cli_email, cli_telefone }])
     .select('*');
 
   if (error) {
@@ -67,12 +100,31 @@ app.post('/cliente', async (req, res) => {
   }
 });
 
-app.get('/clientes', async (req, res) => {
+app.put('/update-cliente/:cli_id', async (req, res) => {
+  const { cli_id } = req.params;
+  const { cli_nome, cli_rg, cli_cpf, cli_email, cli_telefone } = req.body;
   const { data, error } = await supabase
     .from('cliente')
-    .select('*');
+    .update({ cli_nome, cli_rg, cli_cpf, cli_email, cli_telefone })
+    .eq('cli_id', cli_id);
 
   if (error) {
+    console.error('Erro ao atualizar cliente:', error.message);
+    res.status(500).json({ error: error.message });
+  } else {
+    res.status(200).json(data);
+  }
+});
+
+app.delete('/delete-cliente/:cli_id', async (req, res) => {
+  const { cli_id } = req.params;
+  const { data, error } = await supabase
+    .from('cliente')
+    .delete()
+    .eq('cli_id', cli_id);
+
+  if (error) {
+    console.error('Erro ao deletar cliente:', error.message);
     res.status(500).json({ error: error.message });
   } else {
     res.status(200).json(data);
