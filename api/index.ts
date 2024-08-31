@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
+import { supabase } from './subapaseClient';
 
 const cors = require('cors');
 
@@ -44,6 +45,32 @@ app.post('/send-email', async (req, res) => {
   } catch (error) {
     console.error('Erro ao enviar email:', error.message);
     res.status(500).json({ error: 'Erro ao enviar email.' });
+  }
+});
+
+app.post('/cliente', async (req, res) => {
+  const { nome, rg, cpf, email, telefone, endereco_id } = req.body;
+
+  const { data, error } = await supabase
+    .from('clientes')
+    .insert([{ nome, rg, cpf, email, telefone, endereco_id }]);
+
+  if (error) {
+    res.status(500).json({ error: error.message });
+  } else {
+    res.status(200).json(data);
+  }
+});
+
+app.get('/clientes', async (req, res) => {
+  const { data, error } = await supabase
+    .from('clientes')
+    .select('*');
+
+  if (error) {
+    res.status(500).json({ error: error.message });
+  } else {
+    res.status(200).json(data);
   }
 });
 
