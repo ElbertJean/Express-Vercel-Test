@@ -85,11 +85,11 @@ app.get('/get-cliente/:cli_id', async (req, res) => {
 });
 
 app.post('/post-cliente', async (req, res) => {
-  const { cli_id, cli_nome, cli_rg, cli_cpf, cli_email, cli_telefone } = req.body;
+  const { cli_nome, cli_rg, cli_cpf, cli_email, cli_telefone } = req.body;
 
   const { data, error } = await supabase
     .from('cliente')
-    .insert([{ cli_id, cli_nome, cli_rg, cli_cpf, cli_email, cli_telefone }])
+    .insert([{ cli_nome, cli_rg, cli_cpf, cli_email, cli_telefone }])
     .select('*');
 
   if (error) {
